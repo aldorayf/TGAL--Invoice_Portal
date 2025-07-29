@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pay Your Invoices - Trans Global Auto Logistics</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #0066cc 0%, #004499 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .customer-info {
+            background: #f8f9fa;
+            padding: 20px 30px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .customer-info h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            color: #666;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #666;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .invoices-section {
+            padding: 30px;
+        }
+        
+        .invoices-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .select-all {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #0066cc;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .invoice-item {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .invoice-item:hover {
+            border-color: #0066cc;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.15);
+        }
+        
+        .invoice-item.selected {
+            border-color: #0066cc;
+            background: #e6f2ff;
+        }
+        
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .invoice-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .invoice-number {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .invoice-amount {
+            font-size: 20px;
+            font-weight: bold;
+            color: #0066cc;
+        }
+        
+        .invoice-details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .detail-label {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .summary-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-top: 2px solid #e9ecef;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .summary-row.total {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0066cc;
+            padding-top: 10px;
+            border-top: 2px solid #e9ecef;
+        }
+        
+        .payment-options {
+            padding: 30px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .payment-button {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .payment-button.ach {
+            background: #0066cc;
+            color: white;
+        }
+        
+        .payment-button.ach:hover:not(:disabled) {
+            background: #0052a3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+        }
+        
+        .payment-button.credit {
+            background: white;
+            color: #0066cc;
+            border: 2px solid #0066cc;
+        }
+        
+        .payment-button.credit:hover:not(:disabled) {
+            background: #e6f2ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.2);
+        }
+        
+        .payment-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .payment-button.processing {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .fee-note {
+            font-size: 12px;
+            font-weight: normal;
+            display: block;
+            margin-top: 5px;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 30px;
+            font-size: 14px;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+        
+        @media (max-width: 600px) {
+            .invoice-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .payment-options {
+                flex-direction: column;
+            }
+            
+            .payment-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">All Ways International CHB</div>
+            <h1>Select Invoices to Pay</h1>
+        </div>
+        
+        <div id="loadingSection" class="loading">
+            Loading your invoices...
+        </div>
+        
+        <div id="errorSection" class="error" style="display: none;">
+            <strong>Error:</strong> <span id="errorMessage"></span>
+        </div>
+        
+        <div id="successSection" class="success-message">
+            <h3>Redirecting to Stripe Checkout...</h3>
+            <p>Please wait while we prepare your secure payment session.</p>
+        </div>
+        
+        <div id="mainContent" style="display: none;">
+            <div class="customer-info">
+                <h2>Customer Account</h2>
+                <div class="info-row">
+                    <span>Customer:</span>
+                    <span id="customerName">Loading...</span>
+                </div>
+               
+                <div class="info-row">
+                    <span>Account Balance:</span>
+                    <span id="accountBalance" style="font-weight: bold;">Loading...</span>
+                </div>
+            </div>
+            
+            <div class="invoices-section">
+                <div class="invoices-header">
+                    <h3>Outstanding Invoices</h3>
+                    <label class="select-all">
+                        <input type="checkbox" id="selectAll">
+                        Select All
+                    </label>
+                </div>
+                
+                <div id="invoicesList">
+                    <!-- Invoices will be loaded here -->
+                </div>
+            </div>
+            
+            <div class="summary-section">
+                <div class="summary-row">
+                    <span>Selected Invoices:</span>
+                    <span id="selectedCount">0</span>
+                </div>
+                <div class="summary-row">
+                    <span>Subtotal:</span>
+                    <span id="subtotal">$0.00</span>
+                </div>
+                <div class="summary-row">
+                    <span>Credit Card Fee (4%):</span>
+                    <span id="ccFee">$0.00</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Total to Pay:</span>
+                    <span id="total">$0.00</span>
+                </div>
+            </div>
+            
+            <div class="warning">
+                <strong>Important:</strong> ACH payments take up to 5 business days to post. Cargo cannot be released until funds have posted unless the customer has been approved for credit. Any terminal storage fees due to payment delays are the customer's responsibility.
+            </div>
+            
+            <div class="payment-options">
+                <button class="payment-button ach" id="achButton" disabled>
+                    <span id="achButtonText">Pay via ACH</span>
+                    <span class="fee-note">(No Fee - Total: <span id="achTotal">$0.00</span>)</span>
+                </button>
+                <button class="payment-button credit" id="creditButton" disabled>
+                    <span id="creditButtonText">Pay via Credit Card</span>
+                    <span class="fee-note">(4% Fee - Total: <span id="creditTotal">$0.00</span>)</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Configuration - Updated with Vercel URL
+        const VERCEL_API_URL = 'https://awis-stripe-checkout.vercel.app/api/create-checkout-session';
+        
+        // State management
+        let customerData = null;
+        let invoices = [];
+        let selectedInvoices = new Set();
+        let totalAmount = 0;
+        let isProcessing = false;
+        
+        // Get URL parameters
+        function getUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                customerId: params.get('customerId'),
+                token: params.get('token') // Optional: for added security
+            };
+        }
+        
+        // Initialize the page
+        async function initialize() {
+            try {
+                const params = getUrlParams();
+                
+                if (!params.customerId) {
+                    throw new Error('No customer ID provided. Please use the link from your invoice email.');
+                }
+                
+                // Load customer data using customer ID
+                await loadCustomerData(params.customerId);
+                
+                // Show main content
+                document.getElementById('loadingSection').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                
+                // Set up event listeners
+                setupEventListeners();
+                
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+        
+        // Load customer data from API
+        async function loadCustomerData(customerId) {
+            try {
+                // Show loading state
+                document.getElementById('customerName').textContent = 'Loading...';
+                document.getElementById('customerId').textContent = 'Loading...';
+                document.getElementById('accountBalance').textContent = 'Loading...';
+                
+                console.log('Fetching customer data for ID:', customerId);
+                
+                // Call your API to get customer invoices
+                const response = await fetch(`https://awis-stripe-checkout.vercel.app/api/get-customer-invoices?customerId=${encodeURIComponent(customerId)}`);
+                
+                console.log('API Response status:', response.status);
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('API Error:', errorData);
+                    
+                    // Show more specific error message
+                    let errorMessage = 'Failed to load invoice data. ';
+                    if (errorData.error) {
+                        errorMessage += errorData.error;
+                        if (errorData.message) {
+                            errorMessage += ': ' + errorData.message;
+                        }
+                        if (errorData.details) {
+                            errorMessage += ' (' + errorData.details + ')';
+                        }
+                    } else {
+                        errorMessage += `Server returned status ${response.status}`;
+                    }
+                    
+                    throw new Error(errorMessage);
+                }
+                
+                customerData = await response.json();
+                console.log('Customer data received:', customerData);
+                
+                // Update UI with customer data
+                document.getElementById('customerName').textContent = customerData.customerName;
+                document.getElementById('customerId').textContent = customerData.customerId;
+                document.getElementById('accountBalance').textContent = `$${Math.abs(customerData.balance).toFixed(2)}`;
+                document.getElementById('accountBalance').style.color = customerData.balance < 0 ? '#dc3545' : '#28a745';
+                
+                // Render invoices
+                renderInvoices(customerData.invoices);
+                
+            } catch (error) {
+                console.error('Error loading customer data:', error);
+                showError(error.message || 'Failed to load invoice data. Please try again later.');
+            }
+        }
+        
+        // Render invoices
+        function renderInvoices(invoiceData) {
+            invoices = invoiceData;
+            const invoicesList = document.getElementById('invoicesList');
+            invoicesList.innerHTML = '';
+            
+            invoices.forEach(invoice => {
+                const invoiceHtml = `
+                    <div class="invoice-item" data-amount="${invoice.amount}" data-invoice="${invoice.id}">
+                        <div class="invoice-header">
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <input type="checkbox" class="invoice-checkbox" data-amount="${invoice.amount}" data-id="${invoice.id}">
+                                <span class="invoice-number">Invoice #${invoice.id}</span>
+                            </div>
+                            <span class="invoice-amount">$${invoice.amount.toFixed(2)}</span>
+                        </div>
+                        <div class="invoice-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Date Issued</span>
+                                <span>${invoice.date}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Due Date</span>
+                                <span>${invoice.dueDate}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Description</span>
+                                <span>${invoice.description}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                invoicesList.insertAdjacentHTML('beforeend', invoiceHtml);
+            });
+        }
+        
+        // Set up event listeners
+        function setupEventListeners() {
+            document.getElementById('selectAll').addEventListener('change', handleSelectAll);
+            document.getElementById('invoicesList').addEventListener('click', handleInvoiceClick);
+            document.getElementById('achButton').addEventListener('click', () => processPayment('us_bank_account'));
+            document.getElementById('creditButton').addEventListener('click', () => processPayment('card'));
+        }
+        
+        // Handle select all
+        function handleSelectAll(e) {
+            const checkboxes = document.querySelectorAll('.invoice-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = e.target.checked;
+                const invoiceItem = checkbox.closest('.invoice-item');
+                if (e.target.checked) {
+                    invoiceItem.classList.add('selected');
+                } else {
+                    invoiceItem.classList.remove('selected');
+                }
+            });
+            updateSummary();
+        }
+        
+        // Handle invoice click
+        function handleInvoiceClick(e) {
+            const invoiceItem = e.target.closest('.invoice-item');
+            if (!invoiceItem) return;
+            
+            const checkbox = invoiceItem.querySelector('.invoice-checkbox');
+            
+            // Toggle checkbox if clicking anywhere except the checkbox itself
+            if (!e.target.classList.contains('invoice-checkbox')) {
+                checkbox.checked = !checkbox.checked;
+            }
+            
+            // Update visual state
+            if (checkbox.checked) {
+                invoiceItem.classList.add('selected');
+            } else {
+                invoiceItem.classList.remove('selected');
+            }
+            
+            updateSummary();
+        }
+        
+        // Update summary
+        function updateSummary() {
+            const checkedBoxes = document.querySelectorAll('.invoice-checkbox:checked');
+            selectedInvoices.clear();
+            totalAmount = 0;
+            
+            checkedBoxes.forEach(checkbox => {
+                const amount = parseFloat(checkbox.dataset.amount);
+                const invoiceId = checkbox.dataset.id;
+                selectedInvoices.add(invoiceId);
+                totalAmount += amount;
+            });
+            
+            const ccFee = totalAmount * 0.04;
+            const totalWithFee = totalAmount + ccFee;
+            
+            // Update display
+            document.getElementById('selectedCount').textContent = selectedInvoices.size;
+            document.getElementById('subtotal').textContent = `$${totalAmount.toFixed(2)}`;
+            document.getElementById('ccFee').textContent = `$${ccFee.toFixed(2)}`;
+            document.getElementById('total').textContent = `$${totalAmount.toFixed(2)}`;
+            document.getElementById('achTotal').textContent = `$${totalAmount.toFixed(2)}`;
+            document.getElementById('creditTotal').textContent = `$${totalWithFee.toFixed(2)}`;
+            
+            // Enable/disable buttons
+            const hasSelection = selectedInvoices.size > 0;
+            document.getElementById('achButton').disabled = !hasSelection || isProcessing;
+            document.getElementById('creditButton').disabled = !hasSelection || isProcessing;
+            
+            // Update select all checkbox state
+            const allCheckboxes = document.querySelectorAll('.invoice-checkbox');
+            const selectAll = document.getElementById('selectAll');
+            selectAll.checked = checkedBoxes.length === allCheckboxes.length && allCheckboxes.length > 0;
+            selectAll.indeterminate = checkedBoxes.length > 0 && checkedBoxes.length < allCheckboxes.length;
+        }
+        
+        // Process payment - Updated to use Vercel API and redirect to Stripe
+        async function processPayment(method) {
+            if (isProcessing) return;
+            
+            isProcessing = true;
+            const achButton = document.getElementById('achButton');
+            const creditButton = document.getElementById('creditButton');
+            const achButtonText = document.getElementById('achButtonText');
+            const creditButtonText = document.getElementById('creditButtonText');
+            
+            // Update button states
+            achButton.disabled = true;
+            creditButton.disabled = true;
+            achButton.classList.add('processing');
+            creditButton.classList.add('processing');
+            
+            if (method === 'us_bank_account') {
+                achButtonText.textContent = 'Processing...';
+            } else {
+                creditButtonText.textContent = 'Processing...';
+            }
+            
+            try {
+                const invoiceIds = Array.from(selectedInvoices);
+                const selectedInvoiceDetails = invoices.filter(inv => invoiceIds.includes(inv.id));
+                
+                // Calculate amounts
+                const subtotalCents = Math.round(totalAmount * 100);
+                const ccFeeCents = method === 'card' ? Math.round(totalAmount * 0.04 * 100) : 0;
+                const totalCents = subtotalCents + ccFeeCents;
+                
+                const paymentData = {
+                    customer_id: customerData.customerId,
+                    customer_email: customerData.email,
+                    payment_method: method,
+                    invoice_ids: invoiceIds,
+                    invoice_details: selectedInvoiceDetails,
+                    amount_cents: totalCents,
+                    subtotal_cents: subtotalCents,
+                    cc_fee_cents: ccFeeCents,
+                    success_url: `${window.location.origin}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+                    cancel_url: window.location.href
+                };
+                
+                // Log data for debugging
+                console.log('Sending payment data to Vercel:', paymentData);
+                
+                // Call Vercel API
+                const response = await fetch(VERCEL_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(paymentData)
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.sessionUrl) {
+                    // Show success message
+                    document.getElementById('mainContent').style.display = 'none';
+                    document.getElementById('successSection').style.display = 'block';
+                    
+                    // Redirect to Stripe Checkout
+                    setTimeout(() => {
+                        window.location.href = data.sessionUrl;
+                    }, 1500);
+                } else {
+                    throw new Error('No session URL received from server');
+                }
+                
+            } catch (error) {
+                console.error('Payment error:', error);
+                showError(error.message || 'An error occurred while processing your payment. Please try again.');
+                
+                // Reset button states
+                achButton.classList.remove('processing');
+                creditButton.classList.remove('processing');
+                achButtonText.textContent = 'Pay via ACH';
+                creditButtonText.textContent = 'Pay via Credit Card';
+                updateSummary();
+                isProcessing = false;
+            }
+        }
+        
+        // Show error
+        function showError(message) {
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('errorSection').style.display = 'block';
+            document.getElementById('loadingSection').style.display = 'none';
+        }
+        
+        // Initialize when page loads
+        window.addEventListener('DOMContentLoaded', initialize);
+    </script>
+</body>
+</html>
