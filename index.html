@@ -275,7 +275,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="logo">All Ways International CHB</div>
+            <div class="logo">Trans Global Auto Logistics</div>
             <h1>Select Invoices to Pay</h1>
         </div>
         
@@ -299,7 +299,10 @@
                     <span>Customer:</span>
                     <span id="customerName">Loading...</span>
                 </div>
-               
+                <div class="info-row">
+                    <span>Customer ID:</span>
+                    <span id="customerId">Loading...</span>
+                </div>
                 <div class="info-row">
                     <span>Account Balance:</span>
                     <span id="accountBalance" style="font-weight: bold;">Loading...</span>
@@ -340,7 +343,7 @@
             </div>
             
             <div class="warning">
-                <strong>Important:</strong> ACH payments take up to 5 business days to post. Cargo cannot be released until funds have posted unless the customer has been approved for credit. Any terminal storage fees due to payment delays are the customer's responsibility.
+                <strong>Important:</strong> ACH payments take up to 5 business days to post. Vehicles cannot be released until funds have posted unless the customer has been approved for credit. Any storage fees due to payment delays are the customer's responsibility.
             </div>
             
             <div class="payment-options">
@@ -358,7 +361,7 @@
     
     <script>
         // Configuration - Updated with Vercel URL
-        const VERCEL_API_URL = 'https://awis-stripe-checkout.vercel.app/api/create-checkout-session';
+        const VERCEL_API_URL = 'https://tgal-stripe-checkout.vercel.app/api/create-checkout-session';
         
         // State management
         let customerData = null;
@@ -411,7 +414,7 @@
                 console.log('Fetching customer data for ID:', customerId);
                 
                 // Call your API to get customer invoices
-                const response = await fetch(`https://awis-stripe-checkout.vercel.app/api/get-customer-invoices?customerId=${encodeURIComponent(customerId)}`);
+                const response = await fetch(`https://tgal-stripe-checkout.vercel.app/api/get-customer-invoices?customerId=${encodeURIComponent(customerId)}`);
                 
                 console.log('API Response status:', response.status);
                 
